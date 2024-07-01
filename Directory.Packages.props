@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0-preview.5.24306.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0-preview.5.24306.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.5.24306.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Common" Version="9.0.0-preview.5.24306.11" />
+  </ItemGroup>
+</Project>

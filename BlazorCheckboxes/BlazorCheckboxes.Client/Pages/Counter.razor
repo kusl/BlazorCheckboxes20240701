@@ -17,7 +17,7 @@
 
 @code {
     private int currentCount = 0;
-    private HubConnection _hubConnection;
+    private HubConnection? _hubConnection;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -42,11 +42,19 @@
 
     private async Task IncrementCount()
     {
+        if (_hubConnection == null)
+        {
+            return;
+        }
         await _hubConnection.SendAsync("SendMessage", "increment");
     }
 
     private async Task DecrementCount()
     {
+        if (_hubConnection == null)
+        {
+            return;
+        }
         await _hubConnection.SendAsync("SendMessage", "decrement");
     }
 }
