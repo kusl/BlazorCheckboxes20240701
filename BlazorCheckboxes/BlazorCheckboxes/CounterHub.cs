@@ -14,6 +14,15 @@ public class CounterHub : Hub
         {
             _currentCount--;
         }
+        else if (message == "multiplyByRandomNumber")
+        {
+            int randomNumber = Random.Shared.Next(1, 1000);
+            _currentCount *= randomNumber;
+        }
+        else if (message == "resetToZero")
+        {
+            _currentCount = 0;
+        }
         await Clients.All.SendAsync("ReceiveMessage", _currentCount.ToString());
     }
 

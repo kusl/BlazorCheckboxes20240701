@@ -10,12 +10,19 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
-<button class="btn btn-secondary" @onclick="DecrementCount">Decrement</button>
+<button class="btn btn-primary" style="width: 100%;" @onclick="IncrementCount">Increment</button>
+<button class="btn btn-secondary" style="width: 100%;" @onclick="DecrementCount">Decrement</button>
 
-@if (currentCount > 0) 
+<p class="big-text">@currentCount</p>
+@if (currentCount != 0) 
 {
-    <p class="big-text">@currentCount</p>
+
+    <div style="margin-top: 1em;">
+        <button class="btn btn-info" @onclick="MultiplyByRandomNumber" style="width: 100%;">Multiply by a random number</button>
+    </div>
+    <div style="margin-top: 1em;">
+        <button class="btn btn-danger" @onclick="ResetToZero" style="width: 100%;">Reset to zero</button>
+    </div>
 }
 
 @inject NavigationManager Navigation
@@ -61,5 +68,25 @@
             return;
         }
         await _hubConnection.SendAsync("SendMessage", "decrement");
+    }
+
+    private async Task MultiplyByRandomNumber()
+    {
+
+        if (_hubConnection == null)
+        {
+            return;
+        }
+        await _hubConnection.SendAsync("SendMessage", "multiplyByRandomNumber");
+    }
+
+    private async Task ResetToZero()
+    {
+
+        if (_hubConnection == null)
+        {
+            return;
+        }
+        await _hubConnection.SendAsync("SendMessage", "resetToZero");
     }
 }
