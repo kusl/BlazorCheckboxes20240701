@@ -1,4 +1,7 @@
 ﻿@page "/counter"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components
+
 @rendermode InteractiveAuto
 
 <PageTitle>Counter</PageTitle>
@@ -7,13 +10,43 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
+<button class="btn btn-secondary" @onclick="DecrementCount">Decrement</button>
+
+@inject NavigationManager Navigation
 
 @code {
     private int currentCount = 0;
+    private HubConnection _hubConnection;
 
-    private void IncrementCount()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        currentCount++;
+        if (firstRender)
+        {
+            var baseUri = Navigation.BaseUri;
+            var hubUrl = new Uri($"{baseUri}counterHub");
+            _hubConnection = new HubConnectionBuilder().WithUrl(hubUrl.ToString()).Build();
+            _hubConnection.On<string>("ReceiveMessage", HandleMessage);
+            await _hubConnection.StartAsync();
+        }
+    }
+
+    private async void HandleMessage(string message)
+    {
+        if (int.TryParse(message, out int count))
+        {
+            currentCount = count;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task IncrementCount()
+    {
+        await _hubConnection.SendAsync("SendMessage", "increment");
+    }
+
+    private async Task DecrementCount()
+    {
+        await _hubConnection.SendAsync("SendMessage", "decrement");
     }
 }
