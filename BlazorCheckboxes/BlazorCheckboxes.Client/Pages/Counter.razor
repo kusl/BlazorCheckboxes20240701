@@ -13,6 +13,11 @@
 <button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
 <button class="btn btn-secondary" @onclick="DecrementCount">Decrement</button>
 
+@if (currentCount > 0) 
+{
+    <p class="big-text">@currentCount</p>
+}
+
 @inject NavigationManager Navigation
 
 @code {
