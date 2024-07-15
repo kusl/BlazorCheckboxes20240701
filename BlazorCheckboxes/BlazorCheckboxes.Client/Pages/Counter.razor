@@ -28,65 +28,65 @@
 @inject NavigationManager Navigation
 
 @code {
-    private int currentCount = 0;
-    private HubConnection? _hubConnection;
+private int currentCount = 0;
+private HubConnection? _hubConnection;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var baseUri = Navigation.BaseUri;
-            var hubUrl = new Uri($"{baseUri}counterHub");
-            _hubConnection = new HubConnectionBuilder().WithUrl(hubUrl.ToString()).Build();
-            _hubConnection.On<string>("ReceiveMessage", HandleMessage);
-            await _hubConnection.StartAsync();
-        }
-    }
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+if (firstRender)
+{
+    var baseUri = Navigation.BaseUri;
+    var hubUrl = new Uri($"{baseUri}counterHub");
+    _hubConnection = new HubConnectionBuilder().WithUrl(hubUrl.ToString()).Build();
+    _hubConnection.On<string>("ReceiveMessage", HandleMessage);
+    await _hubConnection.StartAsync();
+}
+}
 
-    private async void HandleMessage(string message)
-    {
-        if (int.TryParse(message, out int count))
-        {
-            currentCount = count;
-        }
-        await InvokeAsync(StateHasChanged);
-    }
+private async void HandleMessage(string message)
+{
+if (int.TryParse(message, out int count))
+{
+    currentCount = count;
+}
+await InvokeAsync(StateHasChanged);
+}
 
-    private async Task IncrementCount()
-    {
-        if (_hubConnection == null)
-        {
-            return;
-        }
-        await _hubConnection.SendAsync("SendMessage", "increment");
-    }
+private async Task IncrementCount()
+{
+if (_hubConnection == null)
+{
+    return;
+}
+await _hubConnection.SendAsync("SendMessage", "increment");
+}
 
-    private async Task DecrementCount()
-    {
-        if (_hubConnection == null)
-        {
-            return;
-        }
-        await _hubConnection.SendAsync("SendMessage", "decrement");
-    }
+private async Task DecrementCount()
+{
+if (_hubConnection == null)
+{
+    return;
+}
+await _hubConnection.SendAsync("SendMessage", "decrement");
+}
 
-    private async Task MultiplyByRandomNumber()
-    {
+private async Task MultiplyByRandomNumber()
+{
 
-        if (_hubConnection == null)
-        {
-            return;
-        }
-        await _hubConnection.SendAsync("SendMessage", "multiplyByRandomNumber");
-    }
+if (_hubConnection == null)
+{
+    return;
+}
+await _hubConnection.SendAsync("SendMessage", "multiplyByRandomNumber");
+}
 
-    private async Task ResetToZero()
-    {
+private async Task ResetToZero()
+{
 
-        if (_hubConnection == null)
-        {
-            return;
-        }
-        await _hubConnection.SendAsync("SendMessage", "resetToZero");
-    }
+if (_hubConnection == null)
+{
+    return;
+}
+await _hubConnection.SendAsync("SendMessage", "resetToZero");
+}
 }

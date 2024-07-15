@@ -1,34 +1,57 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
-public class CounterHub : Hub
+namespace BlazorCheckboxes;
+
+public class CounterHub(CounterContext context, ILogger<CounterHub> logger) : Hub
 {
-    private static int _currentCount = 0;
-
     public async Task SendMessage(string message)
     {
+        var counter = await context.Counters.FirstOrDefaultAsync() ?? new Counter { Value = 0 };
+        logger.LogInformation("{Module}: In {class} in {method}, {action} with {parameters}", "Hub", nameof(CounterHub), nameof(SendMessage), "original value for counter", counter.Value.ToString());
+
         if (message == "increment")
         {
-            _currentCount++;
+            counter.Value++;
         }
         else if (message == "decrement")
         {
-            _currentCount--;
+            counter.Value--;
         }
         else if (message == "multiplyByRandomNumber")
         {
             int randomNumber = Random.Shared.Next(1, 1000);
-            _currentCount *= randomNumber;
+            counter.Value *= randomNumber;
+            if (counter.Value == 0)
+            {
+                counter.Value++;
+            }
         }
         else if (message == "resetToZero")
         {
-            _currentCount = 0;
+            counter.Value = 0;
         }
-        await Clients.All.SendAsync("ReceiveMessage", _currentCount.ToString());
+
+        if (counter.Id == 0)
+        {
+            context.Counters.Add(counter);
+        }
+        else
+        {
+            context.Counters.Update(counter);
+        }
+        logger.LogInformation("{Module}: In {class} in {method}, {action} with {parameters}", "Hub", nameof(CounterHub), nameof(SendMessage), "new value of counter to save", counter.Value.ToString());
+        await context.SaveChangesAsync();
+        logger.LogInformation("{Module}: In {class} in {method}, {action} with {parameters}", "Hub", nameof(CounterHub), nameof(SendMessage), "new value of counter saved", counter.Value.ToString());
+        await Clients.All.SendAsync("ReceiveMessage", counter.Value.ToString());
+        logger.LogInformation("{Module}: In {class} in {method}, {action} with {parameters}", "Hub", nameof(CounterHub), nameof(SendMessage), "ReceiveMessage", counter.Value.ToString());
     }
 
     public override async Task OnConnectedAsync()
     {
-        await Clients.Caller.SendAsync("ReceiveMessage", _currentCount.ToString());
+        var counter = await context.Counters.FirstOrDefaultAsync() ?? new Counter { Value = 0 };
+        await Clients.Caller.SendAsync("ReceiveMessage", counter.Value.ToString());
+        logger.LogInformation("{Module}: In {class} in {method}, {action} with {parameters}", "Hub", nameof(CounterHub), nameof(OnConnectedAsync), "ReceiveMessage", counter.Value.ToString());
         await base.OnConnectedAsync();
     }
 }
